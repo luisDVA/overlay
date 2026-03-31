@@ -12,3 +12,4 @@
 # R package build artifacts
 *.tar.gz
 *.Rcheck/
+.positai
