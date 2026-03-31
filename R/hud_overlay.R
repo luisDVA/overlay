@@ -32,8 +32,9 @@
 #'   - `TRUE`: apply a panel with default settings.
 #'   - A named list of arguments forwarded to [hud_panel()] (e.g.
 #'     `list(border_color = "#00FF8866", corner_radius = 18)`).
-#' @param tilt Optional tilt preset. One of `"left"`, `"right"`, `"top"`, or
-#'   `"bottom"`. Generates a perspective warp scaled to the overlay dimensions:
+#' @param tilt Optional tilt preset. One of `"none"`, `"left"`, `"right"`,
+#'   `"top"`, or `"bottom"`. `"none"` applies no warp (flat overlay). The
+#'   others generate a perspective warp scaled to the overlay dimensions:
 #'   `"left"` / `"right"` tilt the corresponding vertical edge away; `"top"` /
 #'   `"bottom"` recede the corresponding horizontal edge. Ignored when `corners`
 #'   is supplied explicitly.
@@ -154,7 +155,8 @@ hud_overlay <- function(overlay, background,
 # ── Internal helpers ──────────────────────────────────────────────────────────
 
 .hud_tilt_corners <- function(tilt, width, height) {
-  tilt <- match.arg(tilt, c("left", "right", "top", "bottom"))
+  tilt <- match.arg(tilt, c("none", "left", "right", "top", "bottom"))
+  if (tilt == "none") return(NULL)
   up   <- -round(height * 0.18)   # leading edge rises
   down <-  round(height * 0.07)   # trailing edge drops
   switch(tilt,
