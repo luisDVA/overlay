@@ -7,9 +7,16 @@
 #'   object to use as the background.
 #' @param overlay A ggplot2 or gt object to render and composite.
 #' @param x Horizontal pixel offset of the overlay's top-left corner.
-#'   Default `0`.
+#'   Overrides `gravity` when supplied. Default `0`.
 #' @param y Vertical pixel offset of the overlay's top-left corner.
-#'   Default `0`.
+#'   Overrides `gravity` when supplied. Default `0`.
+#' @param gravity Optional placement shorthand. One of `"left"`, `"right"`,
+#'   `"centre"` (or `"center"`), `"top-left"`, `"top-right"`, `"top"`,
+#'   `"bottom-left"`, `"bottom-right"`, `"bottom"`. Auto-computes `x` and `y`
+#'   from the background dimensions and `width`/`height`. Ignored for any axis
+#'   where `x` or `y` is supplied explicitly.
+#' @param margin Pixel gap between the overlay and the background edge when
+#'   `gravity` is used. Default `40L`.
 #' @param size Optional size preset: `"small"` (280 × 190), `"medium"`
 #'   (420 × 300), or `"large"` (580 × 380). Sets `width` and `height` when
 #'   those arguments are not supplied explicitly. Ignored if both `width` and
@@ -65,7 +72,9 @@
 #'
 #' @export
 hud_overlay <- function(background, overlay,
-                         x = 0, y = 0,
+                         x = NULL, y = NULL,
+                         gravity = NULL,
+                         margin = 40L,
                          size = NULL,
                          width = NULL, height = NULL,
                          panel = FALSE,
@@ -80,6 +89,20 @@ hud_overlay <- function(background, overlay,
   dims   <- .hud_size_dims(size)
   if (is.null(width))  width  <- dims[["width"]]
   if (is.null(height)) height <- dims[["height"]]
+
+  if (!is.null(gravity) && (is.null(x) || is.null(y))) {
+    bg_img  <- if (inherits(background, "magick-image")) background
+               else magick::image_read(background)
+    bg_info <- magick::image_info(bg_img)
+    gpos    <- .hud_gravity_pos(gravity, width, height,
+                                bg_info$width, bg_info$height,
+                                as.integer(margin))
+    if (is.null(x)) x <- gpos$x
+    if (is.null(y)) y <- gpos$y
+  }
+
+  if (is.null(x)) x <- 0L
+  if (is.null(y)) y <- 0L
 
   ss <- max(1L, as.integer(supersample))
 
@@ -119,6 +142,42 @@ hud_overlay <- function(background, overlay,
 }
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
+
+.hud_gravity_pos <- function(gravity, width, height, bg_w, bg_h, margin) {
+  gravity <- match.arg(
+    tolower(gravity),
+    c("left", "right", "centre", "center",
+      "top-left", "top-right", "top",
+      "bottom-left", "bottom-right", "bottom")
+  )
+  if (gravity == "center") gravity <- "centre"
+
+  x <- switch(gravity,
+    "left"         = margin,
+    "right"        = bg_w - width - margin,
+    "centre"       = as.integer((bg_w - width) / 2L),
+    "top-left"     = margin,
+    "top-right"    = bg_w - width - margin,
+    "top"          = as.integer((bg_w - width) / 2L),
+    "bottom-left"  = margin,
+    "bottom-right" = bg_w - width - margin,
+    "bottom"       = as.integer((bg_w - width) / 2L)
+  )
+
+  y <- switch(gravity,
+    "left"         = as.integer((bg_h - height) / 2L),
+    "right"        = as.integer((bg_h - height) / 2L),
+    "centre"       = as.integer((bg_h - height) / 2L),
+    "top-left"     = margin,
+    "top-right"    = margin,
+    "top"          = margin,
+    "bottom-left"  = bg_h - height - margin,
+    "bottom-right" = bg_h - height - margin,
+    "bottom"       = bg_h - height - margin
+  )
+
+  list(x = as.integer(x), y = as.integer(y))
+}
 
 .hud_size_dims <- function(size) {
   presets <- list(
