@@ -3,9 +3,10 @@
 #' A convenience wrapper that chains [render_hud()], (optionally) [hud_panel()],
 #' (optionally) [warp_hud()], and [composite_hud()] in a single call.
 #'
+#' @param overlay A ggplot2 or gt object to render and composite. Placed first
+#'   so ggplot2/gt objects can be piped directly into the function.
 #' @param background A path to an image file, a URL, or a `magick-image`
 #'   object to use as the background.
-#' @param overlay A ggplot2 or gt object to render and composite.
 #' @param x Horizontal pixel offset of the overlay's top-left corner.
 #'   Overrides `gravity` when supplied. Default `0`.
 #' @param y Vertical pixel offset of the overlay's top-left corner.
@@ -31,9 +32,14 @@
 #'   - `TRUE`: apply a panel with default settings.
 #'   - A named list of arguments forwarded to [hud_panel()] (e.g.
 #'     `list(border_color = "#00FF8866", corner_radius = 18)`).
+#' @param tilt Optional tilt preset. One of `"left"`, `"right"`, `"top"`, or
+#'   `"bottom"`. Generates a perspective warp scaled to the overlay dimensions:
+#'   `"left"` / `"right"` tilt the corresponding vertical edge away; `"top"` /
+#'   `"bottom"` recede the corresponding horizontal edge. Ignored when `corners`
+#'   is supplied explicitly.
 #' @param corners Optional named list of corner offset vectors `c(dx, dy)`
 #'   passed to [warp_hud()]. Names are `"tl"`, `"tr"`, `"bl"`, `"br"`.
-#'   If `NULL` (default) no perspective warp is applied.
+#'   Overrides `tilt` when supplied. If both are `NULL` no warp is applied.
 #' @param opacity Overlay transparency in `[0, 1]`. Default `0.85`.
 #' @param bg Background colour for the rendered overlay. Default
 #'   `"transparent"`.
@@ -58,9 +64,8 @@
 #'
 #' p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
 #'
-#' out <- hud_overlay(
+#' out <- p |> hud_overlay(
 #'   background  = "photo.jpg",
-#'   overlay     = p,
 #'   x = 40, y = 60,
 #'   width = 450, height = 280,
 #'   panel      = list(border_color = "#39FF14"),
@@ -71,13 +76,14 @@
 #' }
 #'
 #' @export
-hud_overlay <- function(background, overlay,
+hud_overlay <- function(overlay, background,
                          x = NULL, y = NULL,
                          gravity = NULL,
                          margin = 40L,
                          size = NULL,
                          width = NULL, height = NULL,
                          panel = FALSE,
+                         tilt = NULL,
                          corners = NULL,
                          opacity = 0.85,
                          bg = "transparent",
@@ -122,6 +128,10 @@ hud_overlay <- function(background, overlay,
     img <- do.call(hud_panel, c(list(img = img), panel_args))
   }
 
+  if (is.null(corners) && !is.null(tilt)) {
+    corners <- .hud_tilt_corners(tilt, width, height)
+  }
+
   if (!is.null(corners)) {
     scaled_corners <- if (ss > 1L) lapply(corners, `*`, ss) else corners
     img <- warp_hud(img, corners = scaled_corners, keep_size = keep_size)
@@ -142,6 +152,18 @@ hud_overlay <- function(background, overlay,
 }
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
+
+.hud_tilt_corners <- function(tilt, width, height) {
+  tilt <- match.arg(tilt, c("left", "right", "top", "bottom"))
+  up   <- -round(height * 0.18)   # leading edge rises
+  down <-  round(height * 0.07)   # trailing edge drops
+  switch(tilt,
+    left   = list(tl = c(0, up),   bl = c(0, down)),
+    right  = list(tr = c(0, up),   br = c(0, down)),
+    top    = list(tl = c(0, up),   tr = c(0, up)),
+    bottom = list(bl = c(0, down), br = c(0, down))
+  )
+}
 
 .hud_gravity_pos <- function(gravity, width, height, bg_w, bg_h, margin) {
   gravity <- match.arg(
