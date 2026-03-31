@@ -1,0 +1,22 @@
+Package: warphud
+Title: Warp ggplot2 and gt Objects for HUD-Style Image Overlays
+Version: 0.0.0.9000
+Authors@R: 
+    person("Luis", "D", role = c("aut", "cre"),
+           email = "luisd@example.com")
+Description: Renders ggplot2 and gt objects as images, applies optional
+    perspective warp distortions, and composites them over background
+    images with transparency — producing a heads-up display (HUD) effect.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports:
+    magick,
+    ragg,
+    rlang
+Suggests:
+    ggplot2,
+    gt,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

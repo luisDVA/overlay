@@ -1,0 +1,14 @@
+# R
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Scratch images and debug outputs in project root
+*.jpg
+*.jpeg
+*.png
+
+# R package build artifacts
+*.tar.gz
+*.Rcheck/
