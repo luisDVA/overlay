@@ -10,8 +10,14 @@
 #'   Default `0`.
 #' @param y Vertical pixel offset of the overlay's top-left corner.
 #'   Default `0`.
-#' @param width Width in pixels at which to render `overlay`. Default `400`.
-#' @param height Height in pixels at which to render `overlay`. Default `300`.
+#' @param size Optional size preset: `"small"` (280 × 190), `"medium"`
+#'   (420 × 300), or `"large"` (580 × 380). Sets `width` and `height` when
+#'   those arguments are not supplied explicitly. Ignored if both `width` and
+#'   `height` are provided.
+#' @param width Width in pixels at which to render `overlay`. Overrides
+#'   `size` when supplied. Default `400` (when `size` is `NULL`).
+#' @param height Height in pixels at which to render `overlay`. Overrides
+#'   `size` when supplied. Default `300` (when `size` is `NULL`).
 #' @param panel Controls whether a HUD panel frame is applied via [hud_panel()]
 #'   after rendering. Options:
 #'   - `FALSE` (default): no panel.
@@ -60,7 +66,8 @@
 #' @export
 hud_overlay <- function(background, overlay,
                          x = 0, y = 0,
-                         width = 400, height = 300,
+                         size = NULL,
+                         width = NULL, height = NULL,
                          panel = FALSE,
                          corners = NULL,
                          opacity = 0.85,
@@ -70,6 +77,10 @@ hud_overlay <- function(background, overlay,
                          supersample = 2L,
                          operator = "over",
                          ...) {
+  dims   <- .hud_size_dims(size)
+  if (is.null(width))  width  <- dims[["width"]]
+  if (is.null(height)) height <- dims[["height"]]
+
   ss <- max(1L, as.integer(supersample))
 
   img <- render_hud(overlay,
@@ -105,4 +116,17 @@ hud_overlay <- function(background, overlay,
                 x = x, y = y,
                 opacity = opacity,
                 operator = operator)
+}
+
+# ── Internal helpers ──────────────────────────────────────────────────────────
+
+.hud_size_dims <- function(size) {
+  presets <- list(
+    small  = list(width = 280L, height = 190L),
+    medium = list(width = 420L, height = 300L),
+    large  = list(width = 580L, height = 380L)
+  )
+  if (is.null(size)) return(list(width = 400L, height = 300L))
+  size <- match.arg(size, names(presets))
+  presets[[size]]
 }
