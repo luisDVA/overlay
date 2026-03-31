@@ -97,6 +97,15 @@ hud_overlay <- function(overlay, background,
   if (is.null(width))  width  <- dims[["width"]]
   if (is.null(height)) height <- dims[["height"]]
 
+  # Resolve tilt preset to corners early so we know whether a warp will happen
+  if (is.null(corners) && !is.null(tilt)) {
+    corners <- .hud_tilt_corners(tilt, width, height)
+  }
+
+  # Only supersample when a warp will be applied; without distortion the
+  # high-res→downscale round-trip aliases ggplot grid lines into artefacts
+  ss <- if (!is.null(corners)) max(1L, as.integer(supersample)) else 1L
+
   if (!is.null(gravity) && (is.null(x) || is.null(y))) {
     bg_img  <- if (inherits(background, "magick-image")) background
                else magick::image_read(background)
@@ -110,8 +119,6 @@ hud_overlay <- function(overlay, background,
 
   if (is.null(x)) x <- 0L
   if (is.null(y)) y <- 0L
-
-  ss <- max(1L, as.integer(supersample))
 
   img <- render_hud(overlay,
                     width  = width  * ss,
@@ -127,10 +134,6 @@ hud_overlay <- function(overlay, background,
       panel_args$border_width  <- (if (is.null(panel_args$border_width))   2L else panel_args$border_width)  * ss
     }
     img <- do.call(hud_panel, c(list(img = img), panel_args))
-  }
-
-  if (is.null(corners) && !is.null(tilt)) {
-    corners <- .hud_tilt_corners(tilt, width, height)
   }
 
   if (!is.null(corners)) {
