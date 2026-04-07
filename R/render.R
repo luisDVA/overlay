@@ -67,13 +67,24 @@ render_hud_gt <- function(x, width, height, bg, res) {
   tmp <- tempfile(fileext = ".png")
   on.exit(unlink(tmp), add = TRUE)
 
-  # gt::gtsave() drives a headless browser; width/height are approximate
-  gt::gtsave(x, filename = tmp)
+  # gtsave() drives a headless browser that composites a solid background into
+  # the PNG, so the rendered image has no real alpha channel. We work around
+  # this by injecting a chroma-key colour as the body background, rendering,
+  # then erasing that colour to restore true transparency before compositing.
+  chroma <- "#FF00FF"
+  x_chroma <- gt::opt_css(
+    x,
+    paste0("body, html { background: ", chroma, " !important; }")
+  )
+
+  gt::gtsave(x_chroma, filename = tmp)
 
   img <- magick::image_read(tmp)
 
-  # Resize to requested dimensions so downstream compositing is predictable
-  img <- magick::image_resize(img, magick::geometry_size_pixels(width, height))
+  # Erase chroma-key pixels; fuzz = 5 handles anti-aliased fringe pixels
+  # without biting into coloured table content
+  img <- magick::image_transparent(img, chroma, fuzz = 5)
 
-  img
+  # Resize to requested dimensions so downstream compositing is predictable
+  magick::image_resize(img, magick::geometry_size_pixels(width, height))
 }

@@ -8,20 +8,20 @@
 #' @param background A path to an image file, a URL, or a `magick-image`
 #'   object to use as the background.
 #' @param x Horizontal pixel offset of the overlay's top-left corner.
-#'   Overrides `gravity` when supplied. Default `0`.
+#'   Overrides `placement` when supplied. Default `0`.
 #' @param y Vertical pixel offset of the overlay's top-left corner.
-#'   Overrides `gravity` when supplied. Default `0`.
-#' @param gravity Optional placement shorthand. One of `"left"`, `"right"`,
+#'   Overrides `placement` when supplied. Default `0`.
+#' @param placement Optional placement shorthand. One of `"left"`, `"right"`,
 #'   `"centre"` (or `"center"`), `"top-left"`, `"top-right"`, `"top"`,
 #'   `"bottom-left"`, `"bottom-right"`, `"bottom"`. Auto-computes `x` and `y`
 #'   from the background dimensions and `width`/`height`. Ignored for any axis
 #'   where `x` or `y` is supplied explicitly.
 #' @param margin Pixel gap between the overlay and the background edge when
-#'   `gravity` is used. Default `40L`.
+#'   `placement` is used. Default `40L`.
 #' @param size Optional size preset: `"small"` (280 × 190), `"medium"`
-#'   (420 × 300), or `"large"` (580 × 380). Sets `width` and `height` when
-#'   those arguments are not supplied explicitly. Ignored if both `width` and
-#'   `height` are provided.
+#'   (420 × 300), `"large"` (580 × 380), `"xl"` (760 × 500), or `"xxl"`
+#'   (960 × 640). Sets `width` and `height` when those arguments are not
+#'   supplied explicitly. Ignored if both `width` and `height` are provided.
 #' @param width Width in pixels at which to render `overlay`. Overrides
 #'   `size` when supplied. Default `400` (when `size` is `NULL`).
 #' @param height Height in pixels at which to render `overlay`. Overrides
@@ -79,7 +79,7 @@
 #' @export
 hud_overlay <- function(overlay, background,
                          x = NULL, y = NULL,
-                         gravity = NULL,
+                         placement = NULL,
                          margin = 40L,
                          size = NULL,
                          width = NULL, height = NULL,
@@ -106,11 +106,11 @@ hud_overlay <- function(overlay, background,
   # high-res→downscale round-trip aliases ggplot grid lines into artefacts
   ss <- if (!is.null(corners)) max(1L, as.integer(supersample)) else 1L
 
-  if (!is.null(gravity) && (is.null(x) || is.null(y))) {
+  if (!is.null(placement) && (is.null(x) || is.null(y))) {
     bg_img  <- if (inherits(background, "magick-image")) background
                else magick::image_read(background)
     bg_info <- magick::image_info(bg_img)
-    gpos    <- .hud_gravity_pos(gravity, width, height,
+    gpos    <- .hud_placement_pos(placement, width, height,
                                 bg_info$width, bg_info$height,
                                 as.integer(margin))
     if (is.null(x)) x <- gpos$x
@@ -160,26 +160,37 @@ hud_overlay <- function(overlay, background,
 .hud_tilt_corners <- function(tilt, width, height) {
   tilt <- match.arg(tilt, c("none", "left", "right", "top", "bottom"))
   if (tilt == "none") return(NULL)
-  up   <- -round(height * 0.18)   # leading edge rises
-  down <-  round(height * 0.07)   # trailing edge drops
+
+  # Vertical-axis tilts (left/right): one vertical edge moves differentially
+  # in y — one corner rises, the other drops — creating a side-lean perspective.
+  up   <- -round(height * 0.18)
+  down <-  round(height * 0.07)
+
+  # Horizontal-axis tilts (top/bottom): one horizontal edge converges inward
+  # in x so the two corners come closer together, mimicking a receding edge.
+  # A small y nudge reinforces the depth cue.
+  shrink <- round(width  * 0.15)
+  lift   <- -round(height * 0.06)
+  drop   <-  round(height * 0.06)
+
   switch(tilt,
-    left   = list(tl = c(0, up),   bl = c(0, down)),
-    right  = list(tr = c(0, up),   br = c(0, down)),
-    top    = list(tl = c(0, up),   tr = c(0, up)),
-    bottom = list(bl = c(0, down), br = c(0, down))
+    left   = list(tl = c(0,       up),   bl = c(0,        down)),
+    right  = list(tr = c(0,       up),   br = c(0,        down)),
+    top    = list(tl = c( shrink, lift), tr = c(-shrink,  lift)),
+    bottom = list(bl = c( shrink, drop), br = c(-shrink,  drop))
   )
 }
 
-.hud_gravity_pos <- function(gravity, width, height, bg_w, bg_h, margin) {
-  gravity <- match.arg(
-    tolower(gravity),
+.hud_placement_pos <- function(placement, width, height, bg_w, bg_h, margin) {
+  placement <- match.arg(
+    tolower(placement),
     c("left", "right", "centre", "center",
       "top-left", "top-right", "top",
       "bottom-left", "bottom-right", "bottom")
   )
-  if (gravity == "center") gravity <- "centre"
+  if (placement == "center") placement <- "centre"
 
-  x <- switch(gravity,
+  x <- switch(placement,
     "left"         = margin,
     "right"        = bg_w - width - margin,
     "centre"       = as.integer((bg_w - width) / 2L),
@@ -191,7 +202,7 @@ hud_overlay <- function(overlay, background,
     "bottom"       = as.integer((bg_w - width) / 2L)
   )
 
-  y <- switch(gravity,
+  y <- switch(placement,
     "left"         = as.integer((bg_h - height) / 2L),
     "right"        = as.integer((bg_h - height) / 2L),
     "centre"       = as.integer((bg_h - height) / 2L),
@@ -210,7 +221,9 @@ hud_overlay <- function(overlay, background,
   presets <- list(
     small  = list(width = 280L, height = 190L),
     medium = list(width = 420L, height = 300L),
-    large  = list(width = 580L, height = 380L)
+    large  = list(width = 580L, height = 380L),
+    xl     = list(width = 760L, height = 500L),
+    xxl    = list(width = 960L, height = 640L)
   )
   if (is.null(size)) return(list(width = 400L, height = 300L))
   size <- match.arg(size, names(presets))
