@@ -31,7 +31,7 @@
 #'   - `FALSE` (default): no panel.
 #'   - `TRUE`: apply a panel with default settings.
 #'   - A named list of arguments forwarded to [hud_panel()] (e.g.
-#'     `list(border_color = "#00FF8866", corner_radius = 18)`).
+#'     `list(border_color = "#00FF8866")`).
 #' @param tilt Optional tilt preset. One of `"none"`, `"left"`, `"right"`,
 #'   `"top"`, or `"bottom"`. `"none"` applies no warp (flat overlay). The
 #'   others generate a perspective warp scaled to the overlay dimensions:
@@ -129,9 +129,8 @@ hud_overlay <- function(overlay, background,
   if (!isFALSE(panel)) {
     panel_args <- if (isTRUE(panel)) list() else panel
     if (ss > 1L) {
-      panel_args$padding       <- (if (is.null(panel_args$padding))       20L else panel_args$padding)       * ss
-      panel_args$corner_radius <- (if (is.null(panel_args$corner_radius)) 14L else panel_args$corner_radius) * ss
-      panel_args$border_width  <- (if (is.null(panel_args$border_width))   2L else panel_args$border_width)  * ss
+      panel_args$padding      <- (if (is.null(panel_args$padding))      20L else panel_args$padding)      * ss
+      panel_args$border_width <- (if (is.null(panel_args$border_width))  2L else panel_args$border_width) * ss
     }
     img <- do.call(hud_panel, c(list(img = img), panel_args))
   }
@@ -151,7 +150,7 @@ hud_overlay <- function(overlay, background,
 
   composite_hud(background, img,
                 x = x, y = y,
-                opacity = opacity,
+                opacity  = opacity,
                 operator = operator)
 }
 

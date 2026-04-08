@@ -5,37 +5,59 @@
 \title{Render, warp, and composite a ggplot2 or gt object over a background image}
 \usage{
 hud_overlay(
-  background,
   overlay,
-  x = 0,
-  y = 0,
-  width = 400,
-  height = 300,
+  background,
+  x = NULL,
+  y = NULL,
+  placement = NULL,
+  margin = 40L,
+  size = NULL,
+  width = NULL,
+  height = NULL,
   panel = FALSE,
+  tilt = NULL,
   corners = NULL,
   opacity = 0.85,
   bg = "transparent",
   res = 150,
   keep_size = TRUE,
+  supersample = 2L,
   operator = "over",
   ...
 )
 }
 \arguments{
+\item{overlay}{A ggplot2 or gt object to render and composite. Placed first
+so ggplot2/gt objects can be piped directly into the function.}
+
 \item{background}{A path to an image file, a URL, or a \code{magick-image}
 object to use as the background.}
 
-\item{overlay}{A ggplot2 or gt object to render and composite.}
-
 \item{x}{Horizontal pixel offset of the overlay's top-left corner.
-Default \code{0}.}
+Overrides \code{placement} when supplied. Default \code{0}.}
 
 \item{y}{Vertical pixel offset of the overlay's top-left corner.
-Default \code{0}.}
+Overrides \code{placement} when supplied. Default \code{0}.}
 
-\item{width}{Width in pixels at which to render \code{overlay}. Default \code{400}.}
+\item{placement}{Optional placement shorthand. One of \code{"left"}, \code{"right"},
+\code{"centre"} (or \code{"center"}), \code{"top-left"}, \code{"top-right"}, \code{"top"},
+\code{"bottom-left"}, \code{"bottom-right"}, \code{"bottom"}. Auto-computes \code{x} and \code{y}
+from the background dimensions and \code{width}/\code{height}. Ignored for any axis
+where \code{x} or \code{y} is supplied explicitly.}
 
-\item{height}{Height in pixels at which to render \code{overlay}. Default \code{300}.}
+\item{margin}{Pixel gap between the overlay and the background edge when
+\code{placement} is used. Default \code{40L}.}
+
+\item{size}{Optional size preset: \code{"small"} (280 × 190), \code{"medium"}
+(420 × 300), \code{"large"} (580 × 380), \code{"xl"} (760 × 500), or \code{"xxl"}
+(960 × 640). Sets \code{width} and \code{height} when those arguments are not
+supplied explicitly. Ignored if both \code{width} and \code{height} are provided.}
+
+\item{width}{Width in pixels at which to render \code{overlay}. Overrides
+\code{size} when supplied. Default \code{400} (when \code{size} is \code{NULL}).}
+
+\item{height}{Height in pixels at which to render \code{overlay}. Overrides
+\code{size} when supplied. Default \code{300} (when \code{size} is \code{NULL}).}
 
 \item{panel}{Controls whether a HUD panel frame is applied via \code{\link[=hud_panel]{hud_panel()}}
 after rendering. Options:
@@ -43,12 +65,19 @@ after rendering. Options:
 \item \code{FALSE} (default): no panel.
 \item \code{TRUE}: apply a panel with default settings.
 \item A named list of arguments forwarded to \code{\link[=hud_panel]{hud_panel()}} (e.g.
-\code{list(border_color = "#00FF8866", corner_radius = 18)}).
+\code{list(border_color = "#00FF8866")}).
 }}
+
+\item{tilt}{Optional tilt preset. One of \code{"none"}, \code{"left"}, \code{"right"},
+\code{"top"}, or \code{"bottom"}. \code{"none"} applies no warp (flat overlay). The
+others generate a perspective warp scaled to the overlay dimensions:
+\code{"left"} / \code{"right"} tilt the corresponding vertical edge away; \code{"top"} /
+\code{"bottom"} recede the corresponding horizontal edge. Ignored when \code{corners}
+is supplied explicitly.}
 
 \item{corners}{Optional named list of corner offset vectors \code{c(dx, dy)}
 passed to \code{\link[=warp_hud]{warp_hud()}}. Names are \code{"tl"}, \code{"tr"}, \code{"bl"}, \code{"br"}.
-If \code{NULL} (default) no perspective warp is applied.}
+Overrides \code{tilt} when supplied. If both are \code{NULL} no warp is applied.}
 
 \item{opacity}{Overlay transparency in \verb{[0, 1]}. Default \code{0.85}.}
 
@@ -59,6 +88,14 @@ If \code{NULL} (default) no perspective warp is applied.}
 
 \item{keep_size}{Passed to \code{\link[=warp_hud]{warp_hud()}} when \code{corners} is not \code{NULL}.
 Default \code{TRUE}.}
+
+\item{supersample}{Integer supersampling factor. Default \code{2L}. The overlay
+is rendered and panelled at \code{supersample} times the requested pixel
+dimensions (with proportionally scaled DPI and panel geometry), warped at
+that higher resolution, then downscaled with a Lanczos filter before
+compositing. This eliminates the horizontal scanline aliasing that
+ImageMagick's perspective distortion produces at steep angles. Increase to
+\code{3L} or \code{4L} for more aggressive anti-aliasing. Set to \code{1L} to disable.}
 
 \item{operator}{ImageMagick compositing operator. Default \code{"over"}.}
 
@@ -77,16 +114,13 @@ library(ggplot2)
 
 p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
 
-# With automatic panel framing and a tilt warp
-out <- hud_overlay(
-  background = "photo.jpg",
-  overlay    = p,
+out <- p |> hud_overlay(
+  background  = "photo.jpg",
   x = 40, y = 60,
   width = 450, height = 280,
-  panel   = list(border_color = "#00FF8866"),
-  opacity = 0.9,
-  corners = list(tl = c(15, -15), tr = c(-15, -15),
-                 bl = c(15,  15), br = c(-15,  15))
+  panel      = list(border_color = "#39FF14"),
+  corners    = list(tl = c(-110, 0), bl = c(-110, 0)),
+  opacity    = 0.9
 )
 magick::image_browse(out)
 }

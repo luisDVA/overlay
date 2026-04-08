@@ -13,3 +13,5 @@
 *.tar.gz
 *.Rcheck/
 .positai
+
+/.quarto/

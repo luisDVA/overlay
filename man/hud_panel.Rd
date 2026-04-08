@@ -7,7 +7,15 @@
 hud_panel(
   img,
   padding = 20,
-  corner_radius = 14,
+  panel_color = "#111111CC",
+  border_color = NA,
+  border_width = 2,
+  ...
+)
+
+hud_panel(
+  img,
+  padding = 20,
   panel_color = "#111111CC",
   border_color = NA,
   border_width = 2,
@@ -20,30 +28,35 @@ hud_panel(
 \item{padding}{Number of pixels to add around all four sides of \code{img}
 before drawing the panel frame. Default \code{20}.}
 
-\item{corner_radius}{Radius of the rounded corners in pixels. Default \code{14}.}
-
 \item{panel_color}{Background colour of the panel as a CSS hex string
-(including alpha channel). Default \code{"#111111CC"} — near-black at ~80\%
+(including alpha channel). Default "#111111CC" — near-black at ~80
 opacity.}
 
 \item{border_color}{Colour of the border drawn around the panel edge.
-Set to \code{NA} (default) to omit the border entirely. A hex colour with
-alpha works well for a glow effect, e.g. \code{"#00FF8866"}.}
+Set to \code{NA} (default) to omit the border entirely. The border is drawn as
+a single stroked rectangle; to change thickness use \code{border_width}.}
 
-\item{border_width}{Line width of the border in pixels. Ignored if
-\code{border_color} is \code{NA}. Default \code{2}.}
+\item{border_width}{Line width of the border in pixels. Default \code{2}.}
 
 \item{...}{Currently unused; reserved for future arguments.}
 }
 \value{
 A \code{magick-image} whose dimensions are \code{width + 2*padding} by
 \code{height + 2*padding} relative to the input.
+
+A \code{magick-image} whose dimensions are \code{width + 2*padding} by
+\code{height + 2*padding} relative to the input.
 }
 \description{
-Adds a dark, rounded-rectangle background (the "panel") around a
-\code{magick-image}, optionally with a coloured border line. The result is a
-larger image with the original content centred on the panel, ready for
-\code{\link[=warp_hud]{warp_hud()}} or \code{\link[=composite_hud]{composite_hud()}}.
+Adds a dark, rectangular background (the "panel") around a \code{magick-image},
+optionally with a coloured border line. The result is a larger image with
+the original content centred on the panel, ready for \code{\link[=warp_hud]{warp_hud()}} or
+\code{\link[=composite_hud]{composite_hud()}}.
+
+Adds a dark rectangular background (the "panel") around a \code{magick-image},
+optionally with a coloured border line. The result is a larger image with
+the original content centred on the panel, ready for \code{\link[=warp_hud]{warp_hud()}} or
+\code{\link[=composite_hud]{composite_hud()}}.
 }
 \examples{
 \dontrun{
@@ -51,11 +64,23 @@ library(ggplot2)
 p   <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
 img <- render_hud(p, width = 480, height = 320, bg = "transparent")
 
-# Wrap in a HUD panel with a subtle cyan border
-panel <- hud_panel(img, border_color = "#00FFFF66")
+# HUD panel with a green glow border
+panel <- hud_panel(img,
+                   panel_color  = "#1B6B3ACC",
+                   border_color = "#57FF8877",
+                   border_width = 6)
+}
 
-# Then warp and composite as usual
-out <- composite_hud("photo.jpg", panel, x = 40, y = 60)
+\\dontrun{
+library(ggplot2)
+p   <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
+img <- render_hud(p, width = 480, height = 320, bg = "transparent")
+
+# HUD panel with a colored border
+panel <- hud_panel(img,
+                   panel_color  = "#1B6B3ACC",
+                   border_color = "#57FF8877",
+                   border_width = 4)
 }
 
 }
