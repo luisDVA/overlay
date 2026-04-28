@@ -1,16 +1,18 @@
-Package: warphud
-Title: Warp ggplot2 and gt Objects for HUD-Style Image Overlays
-Version: 0.0.0.9000
+Package: overlay
+Title: Render and Overlay ggplot2 and gt objects or Code Snippets with Perspective and Transparency
+Version: 0.1.0
 Authors@R: 
-    person("Luis", "D", role = c("aut", "cre"),
-           email = "luisd@example.com")
-Description: Renders ggplot2 and gt objects as images, applies optional
-    perspective warp distortions, and composites them over background
-    images with transparency — producing a heads-up display (HUD) effect.
+    person("Luis D.", "Verde Arregoitia", email = "luis@liomys.mx", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0001-9520-6543"))
+Description: Renders ggplot2 plots, gt tables, and carbon.js code images as 
+    magick objects, applies optional perspective warp distortions, and 
+    composites them over background images with transparency.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+Depends: 
+    R (>= 4.1.0)
 Imports:
     magick,
     ragg,
@@ -18,5 +20,11 @@ Imports:
 Suggests:
     ggplot2,
     gt,
+    httr,
+    palmerpenguins,
+    tibble,
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
+VignetteBuilder: knitr
 Config/testthat/edition: 3

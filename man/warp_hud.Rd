@@ -16,7 +16,7 @@ Names must be \code{"tl"} (top-left), \code{"tr"} (top-right), \code{"bl"}
 (bottom-left), and \code{"br"} (bottom-right). Any corner omitted defaults
 to \code{c(0, 0)} (no movement).
 
-\strong{Example} — tilt the panel so the left edge rises and the right
+\strong{Example}: tilt the panel so the left edge rises and the right
 edge drops:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{corners = list(tl = c(0, -20), bl = c(0, -20),
@@ -27,15 +27,14 @@ edge drops:
 back to the original pixel dimensions. If \code{FALSE}, ImageMagick may
 expand the canvas to contain the warped result.}
 
-\item{...}{Currently unused; reserved for future arguments.}
+\item{...}{Currently unused.}
 }
 \value{
 A warped \code{magick-image} with an alpha channel preserved.
 }
 \description{
 Distorts a \code{magick-image} using a four-point perspective transformation,
-giving the "floating HUD panel" effect where a flat image appears to recede
-or tilt in 3-D space.
+giving the "floating HUD panel" effect.
 }
 \examples{
 \dontrun{

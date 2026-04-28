@@ -1,31 +1,33 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file. -->
 
-# warphud
+# overlay <img src="man/figures/logo.png" align="right" height="138" alt="" />
 
-**warphud** renders ggplot2 and gt objects as images, optionally wraps
-them in a dark HUD-style panel, applies perspective warp distortions,
-and composites them over a background image — producing a heads-up
-display effect.
+overlay renders ggplot2 and gt objects as images, optionally wraps them
+in a dark HUD-style panel, applies perspective warp distortions, and
+composites them over a background image — producing a heads-up display
+effect.
 
-<img src="hud_penguins_final.jpg" alt="" width="100%" />
+<img src="man/figures/hud_penguins_final.jpg" alt="" width="100%" />
 
 ## Installation
 
+Install overlay from GitHub with remotes (or pak)
+
 ``` r
-# install.packages("pak")
-pak::pak("warphud")
+# install.packages("remotes)
+remotes::install_github("luisdva/overlay")
 ```
 
 ## Overview
 
-The package exposes five functions that can be used individually or
-chained together:
+The package has five functions that can be used individually or chained
+together:
 
 | Function          | What it does                                        |
 |-------------------|-----------------------------------------------------|
-| `render_hud()`    | Rasterises a ggplot2 or gt object to a magick image |
-| `hud_panel()`     | Wraps the image in a dark, rounded-rectangle frame  |
+| `render_hud()`    | Rasterizes a ggplot2 or gt object to a magick image |
+| `hud_panel()`     | Adds a frame around the rasterized image            |
 | `warp_hud()`      | Applies a 4-corner perspective distortion           |
 | `composite_hud()` | Composites the overlay onto a background image      |
 | `hud_overlay()`   | Convenience wrapper for the full pipeline           |
@@ -34,7 +36,7 @@ chained together:
 
 ``` r
 library(ggplot2)
-library(warphud)
+library(overlay)
 
 p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
 
@@ -51,28 +53,32 @@ p |>
 
 ## Usage
 
-### `hud_overlay()` — full pipeline in one call
+### `hud_overlay()`
 
-`hud_overlay()` chains render → panel → warp → composite in a single
-call. The overlay is placed first so ggplot2 and gt objects can be piped
-directly into it.
+`hud_overlay()` wraps all the relevant functions (render → panel → warp
+→ composite) in a single call. The overlay is the first argument so
+ggplot2 and gt objects can be piped directly into it.
 
 ``` r
 hud_overlay(
   overlay,           # ggplot2 or gt object
   background,        # path, URL, or magick-image
-  placement = NULL,  # "left", "right", "centre", "top-left", "bottom-right", …
+  placement = NULL,  # "left", "right", "centre", "top", "bottom", "top-left", …
   x = NULL,          # pixel offset (overrides placement)
   y = NULL,
   margin = 40L,      # edge gap when using placement
-  size = NULL,       # "small" (280×190), "medium" (420×300), "large" (580×380)
+  size = NULL,       # "small", "medium", "large", "xl", "xxl"
   width = 400,       # explicit pixel dimensions (override size)
   height = 300,
+  bg = "transparent",# background color for the rendered overlay
+  res = 150,         # DPI resolution for rendering
   panel = FALSE,     # TRUE, FALSE, or named list forwarded to hud_panel()
   tilt = NULL,       # "none", "left", "right", "top", "bottom"
   corners = NULL,    # named list of c(dx, dy) offsets: tl / tr / bl / br
+  keep_size = TRUE,  # crop/pad warped result back to original size
   opacity = 0.85,
-  supersample = 2L   # anti-aliasing factor; increase for steep warps
+  supersample = 2L,  # anti-aliasing factor; increase for steep warps
+  operator = "over"  # ImageMagick compositing operator
 )
 ```
 
@@ -96,7 +102,7 @@ want fine-grained control over an intermediate step:
 
 ``` r
 library(ggplot2)
-library(warphud)
+library(overlay)
 
 p <- ggplot(mtcars, aes(hp, mpg)) + geom_point()
 
@@ -107,7 +113,6 @@ img <- render_hud(p, width = 500, height = 320, res = 150)
 img <- hud_panel(
   img,
   padding       = 20,
-  corner_radius = 16,
   panel_color   = "#111111CC",
   border_color  = "#39FF1488",
   border_width  = 2

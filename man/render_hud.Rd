@@ -2,40 +2,46 @@
 % Please edit documentation in R/render.R
 \name{render_hud}
 \alias{render_hud}
-\title{Render a ggplot2 or gt object to a magick image}
+\title{Render a ggplot2, gt, or carbon code image to a magick image}
 \usage{
 render_hud(x, width = 400, height = 300, bg = "transparent", res = 150, ...)
 }
 \arguments{
-\item{x}{A ggplot2 (\code{"ggplot"}) or gt (\code{"gt_tbl"}) object.}
+\item{x}{A ggplot2 (\code{"ggplot"}), gt (\code{"gt_tbl"}), or magick image object
+(from \code{\link[=carbon_image]{carbon_image()}}).}
 
 \item{width}{Width of the output image in pixels. Default \code{400}.}
 
 \item{height}{Height of the output image in pixels. Default \code{300}.}
 
-\item{bg}{Background colour passed to the graphics device. Use
-\code{"transparent"} (default) to preserve alpha when compositing.
-Note: gt objects rendered via \code{gt::gtsave()} may not fully honour
+\item{bg}{Background color passed to the graphics device. Use
+\code{"transparent"} (default) to keep alpha when compositing.
+Note: gt objects rendered via \code{gt::gtsave()} may not fully honor
 a transparent background; in that case use a dark colour such as
 \code{"#00000000"} and accept the white panel, or style the gt table
-background directly.}
+background directly. For \code{carbon_image()} objects this argument is
+ignored because carbon.js controls its own background via \code{bg_color}.}
 
-\item{res}{Resolution in DPI used when rasterising the plot. Default \code{150}.}
-
-\item{...}{Currently unused; reserved for future arguments.}
+\item{res}{Resolution in DPI used when rasterizing the plot. Default \code{150}.
+Ignored for \code{carbon_image()} objects.}
 }
 \value{
 A \code{magick-image} object.
 }
 \description{
-Converts a ggplot2 plot or gt table to a \code{magick-image}, ready for warping
-or compositing. Dispatches automatically based on the class of \code{x}.
+Converts a ggplot2 plot, gt table, or carbon.js code image to a
+\code{magick-image}, ready for warping or compositing. Dispatches automatically
+based on the class of \code{x}.
 }
 \examples{
 \dontrun{
 library(ggplot2)
 p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
 img <- render_hud(p, width = 500, height = 350)
+
+# Carbon code block
+code_img <- carbon_image('fit <- lm(mpg ~ wt, data = mtcars)\nsummary(fit)')
+img <- render_hud(code_img, width = 600, height = 300)
 }
 
 }

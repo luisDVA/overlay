@@ -2,7 +2,7 @@
 % Please edit documentation in R/composite.R
 \name{composite_hud}
 \alias{composite_hud}
-\title{Composite a HUD overlay onto a background image}
+\title{Composite an overlay onto a background image}
 \usage{
 composite_hud(
   background,
@@ -18,22 +18,20 @@ composite_hud(
 \item{background}{A path to an image file, a URL, or a \code{magick-image}
 object to use as the background.}
 
-\item{overlay}{A \code{magick-image} object to overlay — typically the output
+\item{overlay}{A \code{magick-image} object to overlay, typically the output
 of \code{\link[=render_hud]{render_hud()}} or \code{\link[=warp_hud]{warp_hud()}}.}
 
 \item{x}{Horizontal pixel offset of the overlay's top-left corner from
-the background's top-left. Default \code{0}.}
+the background's top-left. Defaults to \code{0}.}
 
 \item{y}{Vertical pixel offset of the overlay's top-left corner from
-the background's top-left. Default \code{0}.}
+the background's top-left. Defaults to \code{0}.}
 
 \item{opacity}{A number in \verb{[0, 1]} controlling the overlay's
-transparency. \code{1} is fully opaque, \code{0} is invisible. Default \code{0.85}.}
+transparency. \code{1} is fully opaque, \code{0} is invisible. Default is \code{0.85}.}
 
 \item{operator}{ImageMagick compositing operator. Default \code{"over"}.
 See \code{\link[magick:composite]{magick::image_composite()}} for the full list of operators.}
-
-\item{...}{Currently unused; reserved for future arguments.}
 }
 \value{
 A \code{magick-image} of the same dimensions as \code{background}.

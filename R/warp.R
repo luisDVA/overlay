@@ -1,8 +1,7 @@
 #' Apply a perspective warp to a magick image
 #'
 #' Distorts a `magick-image` using a four-point perspective transformation,
-#' giving the "floating HUD panel" effect where a flat image appears to recede
-#' or tilt in 3-D space.
+#' giving the "floating HUD panel" effect.
 #'
 #' @param img A `magick-image` object, typically produced by [render_hud()].
 #' @param corners A named list specifying how far each corner of the image
@@ -12,7 +11,7 @@
 #'   (bottom-left), and `"br"` (bottom-right). Any corner omitted defaults
 #'   to `c(0, 0)` (no movement).
 #'
-#'   **Example** — tilt the panel so the left edge rises and the right
+#'   **Example**: tilt the panel so the left edge rises and the right
 #'   edge drops:
 #'   ```r
 #'   corners = list(tl = c(0, -20), bl = c(0, -20),
@@ -21,7 +20,7 @@
 #' @param keep_size If `TRUE` (default), the output image is cropped/padded
 #'   back to the original pixel dimensions. If `FALSE`, ImageMagick may
 #'   expand the canvas to contain the warped result.
-#' @param ... Currently unused; reserved for future arguments.
+#' @param ... Currently unused.
 #'
 #' @return A warped `magick-image` with an alpha channel preserved.
 #'
@@ -47,7 +46,7 @@ warp_hud <- function(img, corners = list(), keep_size = TRUE, ...) {
   # If any destination corner falls outside the canvas it will be hard-clipped.
   # Detect overflow on all four sides, pre-pad the canvas so every destination
   # corner lands inside the enlarged canvas, and shift src + dst together so
-  # the warp geometry is preserved.  The output therefore has tighter dimensions
+  # the warp geometry is preserved.  The output then has tighter dimensions
   # that exactly bound the warped quad rather than the original w × h.
   dst_xs     <- c(resolved$tl[1], resolved$tr[1], resolved$bl[1], resolved$br[1])
   dst_ys     <- c(resolved$tl[2], resolved$tr[2], resolved$bl[2], resolved$br[2])
@@ -102,7 +101,7 @@ warp_hud <- function(img, corners = list(), keep_size = TRUE, ...) {
   warped
 }
 
-# ── Internal helpers ──────────────────────────────────────────────────────────
+# helpers 
 
 # Resolve corner offsets to absolute destination coordinates.
 # Natural corners: TL=(0,0), TR=(w,0), BL=(0,h), BR=(w,h)
@@ -118,23 +117,6 @@ warp_hud <- function(img, corners = list(), keep_size = TRUE, ...) {
   )
 }
 
-# After perspective distortion, Edge virtual pixels bleed the nearest source
-# edge colour into the empty regions around the warped quad.  Fix by warping
-# a co-registered black-border/white-interior mask with the *same* transform:
-# the extended black pixels become transparent via CopyOpacity, while the
-# white interior preserves the warped content.  Using an identical distort
-# call guarantees pixel-perfect alignment without any offset arithmetic.
-# After perspective distortion, Edge virtual pixels bleed the nearest source
-# edge colour into the empty regions around the warped quad.  Fix by warping
-# a co-registered black-border/white-interior mask with the *same* transform:
-# the extended black pixels become transparent via CopyOpacity, while the
-# white interior preserves the warped content.  Using an identical distort
-# call guarantees pixel-perfect alignment without any offset arithmetic.
-#
-# When the source canvas was padded (pad_left / pad_top > 0) the white
-# interior must cover only the *original* content area, not the transparent
-# padding rows/columns, otherwise virtual-pixel bleed from those transparent
-# regions will corrupt the composite.
 .mask_warp_quad <- function(warped, src_img, control, bestfit,
                              pad_left = 0L, pad_top = 0L,
                              orig_w = NULL, orig_h = NULL) {
@@ -145,8 +127,6 @@ warp_hud <- function(img, corners = list(), keep_size = TRUE, ...) {
   if (is.null(orig_w)) orig_w <- w - pad_left
   if (is.null(orig_h)) orig_h <- h - pad_top
 
-  # White interior bounded to the original content area (1 px inset on each
-  # side to guarantee a transparent border regardless of padding).
   interior <- magick::image_blank(orig_w - 2L, orig_h - 2L, color = "white")
   mask_src <- magick::image_blank(w, h, color = "none") |>
     magick::image_composite(interior, operator = "over",

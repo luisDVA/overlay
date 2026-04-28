@@ -1,10 +1,10 @@
-#' Render, warp, and composite a ggplot2 or gt object over a background image
+#' Render, warp, and composite a ggplot2, gt, or code snippet over a background image
 #'
 #' A convenience wrapper that chains [render_hud()], (optionally) [hud_panel()],
 #' (optionally) [warp_hud()], and [composite_hud()] in a single call.
 #'
-#' @param overlay A ggplot2 or gt object to render and composite. Placed first
-#'   so ggplot2/gt objects can be piped directly into the function.
+#' @param overlay A ggplot2, gt, or an image of a code snippet to render and composite. Placed first
+#'   so the ggplot2/gt/code objects can be piped directly into the function.
 #' @param background A path to an image file, a URL, or a `magick-image`
 #'   object to use as the background.
 #' @param x Horizontal pixel offset of the overlay's top-left corner.
@@ -27,21 +27,20 @@
 #' @param height Height in pixels at which to render `overlay`. Overrides
 #'   `size` when supplied. Default `300` (when `size` is `NULL`).
 #' @param panel Controls whether a HUD panel frame is applied via [hud_panel()]
-#'   after rendering. Options:
-#'   - `FALSE` (default): no panel.
+#'   after rendering. Can be either:
+#'   - `FALSE` (default): no border.
 #'   - `TRUE`: apply a panel with default settings.
-#'   - A named list of arguments forwarded to [hud_panel()] (e.g.
+#'   - A named list of arguments, passed to [hud_panel()] (e.g.
 #'     `list(border_color = "#00FF8866")`).
 #' @param tilt Optional tilt preset. One of `"none"`, `"left"`, `"right"`,
-#'   `"top"`, or `"bottom"`. `"none"` applies no warp (flat overlay). The
-#'   others generate a perspective warp scaled to the overlay dimensions:
+#'   `"top"`, or `"bottom"`. `"none"` applies no warp (flat overlay). Generate a perspective warp scaled to the overlay dimensions:
 #'   `"left"` / `"right"` tilt the corresponding vertical edge away; `"top"` /
 #'   `"bottom"` recede the corresponding horizontal edge. Ignored when `corners`
-#'   is supplied explicitly.
+#'   is supplied.
 #' @param corners Optional named list of corner offset vectors `c(dx, dy)`
 #'   passed to [warp_hud()]. Names are `"tl"`, `"tr"`, `"bl"`, `"br"`.
 #'   Overrides `tilt` when supplied. If both are `NULL` no warp is applied.
-#' @param opacity Overlay transparency in `[0, 1]`. Default `0.85`.
+#' @param opacity Overlay transparency/alpha between `[0, 1]`. Default `0.85`.
 #' @param bg Background colour for the rendered overlay. Default
 #'   `"transparent"`.
 #' @param res Resolution in DPI for rasterising the overlay. Default `150`.
@@ -55,27 +54,71 @@
 #'   ImageMagick's perspective distortion produces at steep angles. Increase to
 #'   `3L` or `4L` for more aggressive anti-aliasing. Set to `1L` to disable.
 #' @param operator ImageMagick compositing operator. Default `"over"`.
-#' @param ... Currently unused.
 #'
 #' @return A `magick-image` of the same dimensions as `background`.
 #'
 #' @examples
 #' \dontrun{
 #' library(ggplot2)
+#' library(gt)
+#' library(tibble)
 #'
-#' p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
+#' # Create a gt table
+#' weather_tbl <- tibble(
+#'   location = "King George Island, Antarctica",
+#'   temp     = "-2 °C",
+#'   wind     = "37 km/h"
+#' ) |>
+#'   gt() |>
+#'   tab_header(title = "Weather Report") |>
+#'   opt_stylize(style = 6, color = "blue")
 #'
-#' out <- p |> hud_overlay(
-#'   background  = "photo.jpg",
-#'   x = 40, y = 60,
-#'   width = 450, height = 280,
-#'   panel      = list(border_color = "#39FF14"),
-#'   corners    = list(tl = c(-110, 0), bl = c(-110, 0)),
-#'   opacity    = 0.9
-#' )
+#' # Create a ggplot
+#' p <- ggplot(penguins, aes(bill_len, bill_dep)) +
+#'   geom_point(color = "#5b9bd5") +
+#'   theme_minimal()
+#'
+#' # Composite them onto a background
+#' bg <- system.file("extdata", "penguins.jpg", package = "overlay")
+#'
+#' out <- weather_tbl |>
+#'   hud_overlay(
+#'     background = bg,
+#'     placement  = "top-left",
+#'     size       = "medium",
+#'     panel      = TRUE,
+#'     opacity    = 0.85
+#'   ) |>
+#'   hud_overlay(
+#'     overlay    = p,
+#'     background = _,
+#'     placement  = "bottom-right",
+#'     size       = "medium",
+#'     tilt       = "right",
+#'     panel      = TRUE,
+#'     opacity    = 0.9
+#'   )
+#'
 #' magick::image_browse(out)
-#' }
+#' 
+#' #' # Multiple overlays with pipe placeholder
+#' code <- 'ggplot(penguins, aes(bill_len, bill_dep)) + geom_point()'
+#' code_img <- carbon_image(code, lang = "r", theme = "dark")
 #'
+#' result <- hud_overlay(
+#'   overlay = p,
+#'   background = bg,
+#'   placement = "left",
+#'   size = "xl"
+#' ) |>
+#'   hud_overlay(
+#'     overlay = code_img,
+#'     background = _,
+#'     placement = "right",
+#'     size = "xl"
+#'   )
+#' }
+#' 
 #' @export
 hud_overlay <- function(overlay, background,
                          x = NULL, y = NULL,
@@ -97,13 +140,13 @@ hud_overlay <- function(overlay, background,
   if (is.null(width))  width  <- dims[["width"]]
   if (is.null(height)) height <- dims[["height"]]
 
-  # Resolve tilt preset to corners early so we know whether a warp will happen
+  # check for tilt preset 
   if (is.null(corners) && !is.null(tilt)) {
     corners <- .hud_tilt_corners(tilt, width, height)
   }
 
-  # Only supersample when a warp will be applied; without distortion the
-  # high-res→downscale round-trip aliases ggplot grid lines into artefacts
+  # Only supersample when a warp will be applied; oterhwise the
+  # high-res → downscale round-trip aliases ggplot grid lines into unwanted scanlines
   ss <- if (!is.null(corners)) max(1L, as.integer(supersample)) else 1L
 
   if (!is.null(placement) && (is.null(x) || is.null(y))) {
@@ -154,20 +197,20 @@ hud_overlay <- function(overlay, background,
                 operator = operator)
 }
 
-# ── Internal helpers ──────────────────────────────────────────────────────────
+# helpers 
 
 .hud_tilt_corners <- function(tilt, width, height) {
   tilt <- match.arg(tilt, c("none", "left", "right", "top", "bottom"))
   if (tilt == "none") return(NULL)
 
   # Vertical-axis tilts (left/right): one vertical edge moves differentially
-  # in y — one corner rises, the other drops — creating a side-lean perspective.
+  # in y  one corner rises and the other drops for perspective
   up   <- -round(height * 0.18)
   down <-  round(height * 0.07)
 
   # Horizontal-axis tilts (top/bottom): one horizontal edge converges inward
-  # in x so the two corners come closer together, mimicking a receding edge.
-  # A small y nudge reinforces the depth cue.
+  # in x so the two corners come closer together
+  # A small y nudge reinforces the depth cue
   shrink <- round(width  * 0.15)
   lift   <- -round(height * 0.06)
   drop   <-  round(height * 0.06)
@@ -187,7 +230,7 @@ hud_overlay <- function(overlay, background,
       "top-left", "top-right", "top",
       "bottom-left", "bottom-right", "bottom")
   )
-  if (placement == "center") placement <- "centre"
+  if (placement == "center") placement <- "centre" # spelling
 
   x <- switch(placement,
     "left"         = margin,

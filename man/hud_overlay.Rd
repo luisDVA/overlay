@@ -2,7 +2,7 @@
 % Please edit documentation in R/hud_overlay.R
 \name{hud_overlay}
 \alias{hud_overlay}
-\title{Render, warp, and composite a ggplot2 or gt object over a background image}
+\title{Render, warp, and composite a ggplot2, gt, or code snippet over a background image}
 \usage{
 hud_overlay(
   overlay,
@@ -27,8 +27,8 @@ hud_overlay(
 )
 }
 \arguments{
-\item{overlay}{A ggplot2 or gt object to render and composite. Placed first
-so ggplot2/gt objects can be piped directly into the function.}
+\item{overlay}{A ggplot2, gt, or an image of a code snippet to render and composite. Placed first
+so the ggplot2/gt/code objects can be piped directly into the function.}
 
 \item{background}{A path to an image file, a URL, or a \code{magick-image}
 object to use as the background.}
@@ -60,26 +60,25 @@ supplied explicitly. Ignored if both \code{width} and \code{height} are provided
 \code{size} when supplied. Default \code{300} (when \code{size} is \code{NULL}).}
 
 \item{panel}{Controls whether a HUD panel frame is applied via \code{\link[=hud_panel]{hud_panel()}}
-after rendering. Options:
+after rendering. Can be either:
 \itemize{
-\item \code{FALSE} (default): no panel.
+\item \code{FALSE} (default): no border.
 \item \code{TRUE}: apply a panel with default settings.
-\item A named list of arguments forwarded to \code{\link[=hud_panel]{hud_panel()}} (e.g.
+\item A named list of arguments, passed to \code{\link[=hud_panel]{hud_panel()}} (e.g.
 \code{list(border_color = "#00FF8866")}).
 }}
 
 \item{tilt}{Optional tilt preset. One of \code{"none"}, \code{"left"}, \code{"right"},
-\code{"top"}, or \code{"bottom"}. \code{"none"} applies no warp (flat overlay). The
-others generate a perspective warp scaled to the overlay dimensions:
+\code{"top"}, or \code{"bottom"}. \code{"none"} applies no warp (flat overlay). Generate a perspective warp scaled to the overlay dimensions:
 \code{"left"} / \code{"right"} tilt the corresponding vertical edge away; \code{"top"} /
 \code{"bottom"} recede the corresponding horizontal edge. Ignored when \code{corners}
-is supplied explicitly.}
+is supplied.}
 
 \item{corners}{Optional named list of corner offset vectors \code{c(dx, dy)}
 passed to \code{\link[=warp_hud]{warp_hud()}}. Names are \code{"tl"}, \code{"tr"}, \code{"bl"}, \code{"br"}.
 Overrides \code{tilt} when supplied. If both are \code{NULL} no warp is applied.}
 
-\item{opacity}{Overlay transparency in \verb{[0, 1]}. Default \code{0.85}.}
+\item{opacity}{Overlay transparency/alpha between \verb{[0, 1]}. Default \code{0.85}.}
 
 \item{bg}{Background colour for the rendered overlay. Default
 \code{"transparent"}.}
@@ -98,8 +97,6 @@ ImageMagick's perspective distortion produces at steep angles. Increase to
 \code{3L} or \code{4L} for more aggressive anti-aliasing. Set to \code{1L} to disable.}
 
 \item{operator}{ImageMagick compositing operator. Default \code{"over"}.}
-
-\item{...}{Currently unused.}
 }
 \value{
 A \code{magick-image} of the same dimensions as \code{background}.
@@ -111,18 +108,63 @@ A convenience wrapper that chains \code{\link[=render_hud]{render_hud()}}, (opti
 \examples{
 \dontrun{
 library(ggplot2)
+library(gt)
+library(tibble)
 
-p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
+# Create a gt table
+weather_tbl <- tibble(
+  location = "King George Island, Antarctica",
+  temp     = "-2 °C",
+  wind     = "37 km/h"
+) |>
+  gt() |>
+  tab_header(title = "Weather Report") |>
+  opt_stylize(style = 6, color = "blue")
 
-out <- p |> hud_overlay(
-  background  = "photo.jpg",
-  x = 40, y = 60,
-  width = 450, height = 280,
-  panel      = list(border_color = "#39FF14"),
-  corners    = list(tl = c(-110, 0), bl = c(-110, 0)),
-  opacity    = 0.9
-)
+# Create a ggplot
+p <- ggplot(penguins, aes(bill_len, bill_dep)) +
+  geom_point(color = "#5b9bd5") +
+  theme_minimal()
+
+# Composite them onto a background
+bg <- system.file("extdata", "penguins.jpg", package = "overlay")
+
+out <- weather_tbl |>
+  hud_overlay(
+    background = bg,
+    placement  = "top-left",
+    size       = "medium",
+    panel      = TRUE,
+    opacity    = 0.85
+  ) |>
+  hud_overlay(
+    overlay    = p,
+    background = _,
+    placement  = "bottom-right",
+    size       = "medium",
+    tilt       = "right",
+    panel      = TRUE,
+    opacity    = 0.9
+  )
+
 magick::image_browse(out)
+
+#' # Multiple overlays with pipe placeholder
+code <- 'ggplot(penguins, aes(bill_len, bill_dep)) + geom_point()'
+code_img <- carbon_image(code, lang = "r", theme = "dark")
+
+result <- hud_overlay(
+  overlay = p,
+  background = bg,
+  placement = "left",
+  size = "xl"
+) |>
+  hud_overlay(
+    overlay = code_img,
+    background = _,
+    placement = "right",
+    size = "xl"
+  )
 }
 
 }
