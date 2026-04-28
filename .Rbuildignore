@@ -4,3 +4,7 @@
 ^\.claude$
 ^README\.Rmd$
 ^man/figures/.*\.jpg$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
