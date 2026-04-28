@@ -18,6 +18,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Render and Overlay ggplot2 and gt objects or Code Snippets with Perspective and Transparency">
 <meta name="description" content="Renders ggplot2 plots, gt tables, and carbon.js code images as magick objects, applies optional perspective warp distortions, and composites them over background images with transparency.">
 <meta property="og:description" content="Renders ggplot2 plots, gt tables, and carbon.js code images as magick objects, applies optional perspective warp distortions, and composites them over background images with transparency.">
+<meta property="og:image" content="https://luisdva.github.io/overlay/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -57,8 +58,10 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="overlay-">overlay <img src="reference/figures/logo.png" align="right" height="138" alt=""><a class="anchor" aria-label="anchor" href="#overlay-"></a>
-</h1></div>
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="overlay-">overlay <a class="anchor" aria-label="anchor" href="#overlay-"></a>
+</h1>
+</div>
 <p>overlay renders ggplot2 or gt objects as well as code snippets into magick images, optionally adds a heads-up display (HUD) panel, applies perspective warps, and composites the result over a background image with optional transparency.</p>
 <p>This could be done quite easily in PowerPoint or other graphic design software, but writing this as a package lets us work with objects in our R environment programmatically and reproducibly.</p>
 <blockquote>

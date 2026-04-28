@@ -1,4 +1,4 @@
-# overlay ![](reference/figures/logo.png)
+# overlay
 
 overlay renders ggplot2 or gt objects as well as code snippets into
 magick images, optionally adds a heads-up display (HUD) panel, applies
