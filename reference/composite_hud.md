@@ -52,6 +52,11 @@ composite_hud(
   [`magick::image_composite()`](https://docs.ropensci.org/magick/reference/composite.html)
   for the full list of operators.
 
+- ...:
+
+  Additional arguments (currently unused, but reserved for future
+  extensions).
+
 ## Value
 
 A `magick-image` of the same dimensions as `background`.

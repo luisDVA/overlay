@@ -152,6 +152,11 @@ hud_overlay(
 
   ImageMagick compositing operator. Default `"over"`.
 
+- ...:
+
+  Additional arguments (currently unused, but reserved for future
+  extensions).
+
 ## Value
 
 A `magick-image` of the same dimensions as `background`.

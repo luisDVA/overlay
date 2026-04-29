@@ -44,6 +44,11 @@ render_hud(x, width = 400, height = 300, bg = "transparent", res = 150, ...)
   [`carbon_image()`](https://luisdva.github.io/overlay/reference/carbon_image.md)
   objects.
 
+- ...:
+
+  Additional arguments, currently unused but reserved for future
+  extensions.
+
 ## Value
 
 A `magick-image` object.
@@ -57,7 +62,7 @@ p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
 img <- render_hud(p, width = 500, height = 350)
 
 # Carbon code block
-code_img <- carbon_image('fit <- lm(mpg ~ wt, data = mtcars)\nsummary(fit)')
+code_img <- carbon_image('fit <- lm(mpg ~ wt, data = mtcars)\\nsummary(fit)')
 img <- render_hud(code_img, width = 600, height = 300)
 } # }
 ```

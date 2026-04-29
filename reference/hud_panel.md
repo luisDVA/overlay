@@ -46,6 +46,11 @@ hud_panel(
 
   Line width of the border in pixels. Defaults to `2`.
 
+- ...:
+
+  Additional arguments (currently unused, but reserved for future
+  extensions).
+
 ## Value
 
 A `magick-image` with size `width + 2*padding` by `height + 2*padding`
