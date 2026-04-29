@@ -97,6 +97,9 @@ ImageMagick's perspective distortion produces at steep angles. Increase to
 \code{3L} or \code{4L} for more aggressive anti-aliasing. Set to \code{1L} to disable.}
 
 \item{operator}{ImageMagick compositing operator. Default \code{"over"}.}
+
+\item{...}{Additional arguments (currently unused, but reserved for future
+extensions).}
 }
 \value{
 A \code{magick-image} of the same dimensions as \code{background}.

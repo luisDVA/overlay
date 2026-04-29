@@ -26,6 +26,9 @@ before drawing the panel frame. Default \code{20}.}
 Set to \code{NA} (default) to omit the border.}
 
 \item{border_width}{Line width of the border in pixels. Defaults to \code{2}.}
+
+\item{...}{Additional arguments (currently unused, but reserved for future
+extensions).}
 }
 \value{
 A \code{magick-image} with size \code{width + 2*padding} by

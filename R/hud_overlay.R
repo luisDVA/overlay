@@ -54,6 +54,8 @@
 #'   ImageMagick's perspective distortion produces at steep angles. Increase to
 #'   `3L` or `4L` for more aggressive anti-aliasing. Set to `1L` to disable.
 #' @param operator ImageMagick compositing operator. Default `"over"`.
+#' @param ... Additional arguments (currently unused, but reserved for future
+#'   extensions).
 #'
 #' @return A `magick-image` of the same dimensions as `background`.
 #'

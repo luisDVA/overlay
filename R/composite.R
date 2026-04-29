@@ -15,6 +15,8 @@
 #'   transparency. `1` is fully opaque, `0` is invisible. Default is `0.85`.
 #' @param operator ImageMagick compositing operator. Default `"over"`.
 #'   See [magick::image_composite()] for the full list of operators.
+#' @param ... Additional arguments (currently unused, but reserved for future
+#'   extensions).
 #'
 #' @return A `magick-image` of the same dimensions as `background`.
 #'

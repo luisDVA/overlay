@@ -1,0 +1,9 @@
+typography:
+  fonts:
+    - family: Didact Gothic
+      source: bunny
+    - family: Red Hat Mono
+      source: bunny
+  base: Didact Gothic
+  headings: Didact Gothic
+  monospace: Red Hat Mono

@@ -13,6 +13,8 @@
 #' @param border_color Colour of the border drawn around the panel edge.
 #'   Set to `NA` (default) to omit the border.
 #' @param border_width Line width of the border in pixels. Defaults to `2`.
+#' @param ... Additional arguments (currently unused, but reserved for future
+#'   extensions).
 #'
 #' @return A `magick-image` with size `width + 2*padding` by
 #'   `height + 2*padding` relative to the input.

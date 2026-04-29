@@ -32,6 +32,9 @@ transparency. \code{1} is fully opaque, \code{0} is invisible. Default is \code{
 
 \item{operator}{ImageMagick compositing operator. Default \code{"over"}.
 See \code{\link[magick:composite]{magick::image_composite()}} for the full list of operators.}
+
+\item{...}{Additional arguments (currently unused, but reserved for future
+extensions).}
 }
 \value{
 A \code{magick-image} of the same dimensions as \code{background}.

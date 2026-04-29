@@ -24,6 +24,9 @@ ignored because carbon.js controls its own background via \code{bg_color}.}
 
 \item{res}{Resolution in DPI used when rasterizing the plot. Default \code{150}.
 Ignored for \code{carbon_image()} objects.}
+
+\item{...}{Additional arguments, currently unused but reserved for future
+extensions.}
 }
 \value{
 A \code{magick-image} object.
@@ -40,7 +43,7 @@ p <- ggplot(mtcars, aes(wt, mpg)) + geom_point()
 img <- render_hud(p, width = 500, height = 350)
 
 # Carbon code block
-code_img <- carbon_image('fit <- lm(mpg ~ wt, data = mtcars)\nsummary(fit)')
+code_img <- carbon_image('fit <- lm(mpg ~ wt, data = mtcars)\\\\nsummary(fit)')
 img <- render_hud(code_img, width = 600, height = 300)
 }
 

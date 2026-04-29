@@ -1,4 +1,8 @@
 url: https://luisdva.github.io/overlay/
+
 template:
   bootstrap: 5
-
+  light-switch: true
+  bslib:
+    brand: pkgdown/_brand.yml
+    
