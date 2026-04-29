@@ -10,6 +10,15 @@
 
 Renders ggplot2 plots, gt tables, and carbon.js code images as magick objects, applies optional perspective warp distortions, and composites them over background images with transparency.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/luisDVA/overlay}
+  \item \url{https://luisdva.github.io/overlay/}
+  \item Report bugs at \url{https://github.com/luisDVA/overlay/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Luis D. Verde Arregoitia \email{luis@liomys.mx} (\href{https://orcid.org/0000-0001-9520-6543}{ORCID}) [copyright holder]
 

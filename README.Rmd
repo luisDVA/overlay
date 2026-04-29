@@ -271,8 +271,8 @@ magick::image_write(out, "result.png")
 
 ### System requirements
 
-- ImageMagick (required by magick). Verify with `magick::magick_config()` in R or `magick -version` in your shell.
-- Fonts: if your plots/tables use custom fonts, ensure they are available to the system.
+- ImageMagick (required by magick). Verify with `magick::magick_config()` in R or `magick --version` in the terminal.
+- Fonts: when using custom fonts, make sure they are available.
 
 ### LLM disclosure
 
