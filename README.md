@@ -4,9 +4,9 @@
 # overlay <img src="man/figures/logo.png" align="right" height="138" alt="" />
 
 overlay renders ggplot2 or gt objects as well as code snippets into
-magick images, optionally adds a heads-up display (HUD) panel, applies
-perspective warps, and composites the result over a background image
-with optional transparency.
+magick image objects, optionally adds a heads-up display (HUD) panel
+border, applies perspective warps, and composites the result over a
+background image with optional transparency.
 
 This could be done quite easily in PowerPoint or other graphic design
 software, but writing this as a package lets us work with objects in our
@@ -77,9 +77,10 @@ out <- p |>
 
 ### `hud_overlay()`
 
-`hud_overlay()` wraps all the relevant functions (render → panel → warp
-→ overlay) in a single call. The object to overlay is the first argument
-so the ggplot2 and gt objects can be piped directly into the function.
+`hud_overlay()` wraps all the relevant functions (render, panel, warp,
+and overlay) in a single call. The object to overlay is the first
+argument so the ggplot2 and gt objects can be piped directly into the
+function.
 
 ``` r
 hud_overlay(
@@ -290,9 +291,8 @@ magick::image_write(out, "result.png")
 ### System requirements
 
 - ImageMagick (required by magick). Verify with
-  `magick::magick_config()` in R or `magick -version` in your shell.
-- Fonts: if your plots/tables use custom fonts, ensure they are
-  available to the system.
+  `magick::magick_config()` in R or `magick --version` in the terminal.
+- Fonts: when using custom fonts, make sure they are available.
 
 ### LLM disclosure
 

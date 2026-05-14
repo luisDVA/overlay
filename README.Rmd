@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 # overlay <img src="man/figures/logo.png" align="right" height="138" alt="" />
 
-overlay renders ggplot2 or gt objects as well as code snippets into magick images, optionally adds a heads-up display (HUD) panel, applies perspective warps, and composites the result over a background image with optional transparency.  
+overlay renders ggplot2 or gt objects as well as code snippets into magick image objects, optionally adds a heads-up display (HUD) panel border, applies perspective warps, and composites the result over a background image with optional transparency.  
   
 This could be done quite easily in PowerPoint or other graphic design software, but writing this as a package lets us work with objects in our R environment programmatically and reproducibly. 
 
@@ -83,7 +83,7 @@ out <- p |>
 
 ### `hud_overlay()`
 
-`hud_overlay()` wraps all the relevant functions (render → panel → warp → overlay) in a single call. The object to overlay is the first argument so the ggplot2 and gt objects can be piped directly into the function.
+`hud_overlay()` wraps all the relevant functions (render, panel, warp, and overlay) in a single call. The object to overlay is the first argument so the ggplot2 and gt objects can be piped directly into the function.
 
 ```{r hud-overlay-args}
 hud_overlay(

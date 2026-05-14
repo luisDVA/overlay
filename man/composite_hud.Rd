@@ -31,7 +31,7 @@ the background's top-left. Defaults to \code{0}.}
 transparency. \code{1} is fully opaque, \code{0} is invisible. Default is \code{0.85}.}
 
 \item{operator}{ImageMagick compositing operator. Default \code{"over"}.
-See \code{\link[magick:composite]{magick::image_composite()}} for the full list of operators.}
+See \code{\link[magick:image_composite]{magick::image_composite()}} for the full list of operators.}
 
 \item{...}{Additional arguments (currently unused, but reserved for future
 extensions).}

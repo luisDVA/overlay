@@ -10,7 +10,6 @@ Description: Renders ggplot2 plots, gt tables, and carbon.js code images as
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Depends: 
     R (>= 4.1.0)
 Imports:
@@ -30,3 +29,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/luisDVA/overlay, https://luisdva.github.io/overlay/
 BugReports: https://github.com/luisDVA/overlay/issues
+Config/roxygen2/version: 8.0.0
