@@ -18,3 +18,8 @@ Useful links:
 
 **Maintainer**: Luis D. Verde Arregoitia <luis@liomys.mx>
 ([ORCID](https://orcid.org/0000-0001-9520-6543)) \[copyright holder\]
+
+Authors:
+
+- Luis D. Verde Arregoitia <luis@liomys.mx>
+  ([ORCID](https://orcid.org/0000-0001-9520-6543)) \[copyright holder\]

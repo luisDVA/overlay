@@ -72,7 +72,7 @@
 <img src="logo.png" class="logo" alt=""><h1 id="overlay-">overlay <a class="anchor" aria-label="anchor" href="#overlay-"></a>
 </h1>
 </div>
-<p>overlay renders ggplot2 or gt objects as well as code snippets into magick images, optionally adds a heads-up display (HUD) panel, applies perspective warps, and composites the result over a background image with optional transparency.</p>
+<p>overlay renders ggplot2 or gt objects as well as code snippets into magick image objects, optionally adds a heads-up display (HUD) panel border, applies perspective warps, and composites the result over a background image with optional transparency.</p>
 <p>This could be done quite easily in PowerPoint or other graphic design software, but writing this as a package lets us work with objects in our R environment programmatically and reproducibly.</p>
 <blockquote>
 <p>Example outputs. Left: a gt table with an added border; Right: a ggplot2 object with perspective tilt and the underlying code as a carbon.js image. Photograph by Derek Oyen, Unsplash.</p>
@@ -100,28 +100,28 @@
 <col width="26%">
 <col width="73%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Function</th>
 <th>Behavior</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><code><a href="reference/render_hud.html">render_hud()</a></code></td>
 <td>Rasterizes a ggplot2 or gt object to a magick image</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code><a href="reference/hud_panel.html">hud_panel()</a></code></td>
 <td>Adds a frame around the rasterized image</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code><a href="reference/warp_hud.html">warp_hud()</a></code></td>
 <td>Applies a four-corner perspective distortion</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code><a href="reference/composite_hud.html">composite_hud()</a></code></td>
 <td>Composites the overlay onto a background image</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code><a href="reference/hud_overlay.html">hud_overlay()</a></code></td>
 <td>Convenience wrapper for the full pipeline</td>
 </tr>
@@ -161,7 +161,7 @@
 <h3 id="hud_overlay">
 <code>hud_overlay()</code><a class="anchor" aria-label="anchor" href="#hud_overlay"></a>
 </h3>
-<p><code><a href="reference/hud_overlay.html">hud_overlay()</a></code> wraps all the relevant functions (render → panel → warp → overlay) in a single call. The object to overlay is the first argument so the ggplot2 and gt objects can be piped directly into the function.</p>
+<p><code><a href="reference/hud_overlay.html">hud_overlay()</a></code> wraps all the relevant functions (render, panel, warp, and overlay) in a single call. The object to overlay is the first argument so the ggplot2 and gt objects can be piped directly into the function.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/hud_overlay.html">hud_overlay</a></span><span class="op">(</span></span>
 <span>  <span class="va">overlay</span>,           <span class="co"># ggplot2 or gt object, or carbon image of a code snippet</span></span>
@@ -342,8 +342,8 @@
 <h3 id="system-requirements">System requirements<a class="anchor" aria-label="anchor" href="#system-requirements"></a>
 </h3>
 <ul>
-<li>ImageMagick (required by magick). Verify with <code><a href="https://docs.ropensci.org/magick/reference/config.html" class="external-link">magick::magick_config()</a></code> in R or <code>magick -version</code> in your shell.</li>
-<li>Fonts: if your plots/tables use custom fonts, ensure they are available to the system.</li>
+<li>ImageMagick (required by magick). Verify with <code><a href="https://docs.ropensci.org/magick/reference/config.html" class="external-link">magick::magick_config()</a></code> in R or <code>magick --version</code> in the terminal.</li>
+<li>Fonts: when using custom fonts, make sure they are available.</li>
 </ul>
 </div>
 <div class="section level3">

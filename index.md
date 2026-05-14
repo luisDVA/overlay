@@ -1,9 +1,9 @@
 # overlay
 
 overlay renders ggplot2 or gt objects as well as code snippets into
-magick images, optionally adds a heads-up display (HUD) panel, applies
-perspective warps, and composites the result over a background image
-with optional transparency.
+magick image objects, optionally adds a heads-up display (HUD) panel
+border, applies perspective warps, and composites the result over a
+background image with optional transparency.
 
 This could be done quite easily in PowerPoint or other graphic design
 software, but writing this as a package lets us work with objects in our
@@ -20,6 +20,7 @@ R environment programmatically and reproducibly.
 Install overlay from GitHub with remotes (or pak)
 
 ``` r
+
 # install.packages("remotes")
 remotes::install_github("luisdva/overlay")
 
@@ -36,17 +37,18 @@ on your system (see System requirements below).
 The package has five functions that can be used individually or chained
 together:
 
-| Function                                                                          | Behavior                                            |
-|-----------------------------------------------------------------------------------|-----------------------------------------------------|
-| [`render_hud()`](https://luisdva.github.io/overlay/reference/render_hud.md)       | Rasterizes a ggplot2 or gt object to a magick image |
-| [`hud_panel()`](https://luisdva.github.io/overlay/reference/hud_panel.md)         | Adds a frame around the rasterized image            |
-| [`warp_hud()`](https://luisdva.github.io/overlay/reference/warp_hud.md)           | Applies a four-corner perspective distortion        |
-| [`composite_hud()`](https://luisdva.github.io/overlay/reference/composite_hud.md) | Composites the overlay onto a background image      |
-| [`hud_overlay()`](https://luisdva.github.io/overlay/reference/hud_overlay.md)     | Convenience wrapper for the full pipeline           |
+| Function | Behavior |
+|----|----|
+| [`render_hud()`](https://luisdva.github.io/overlay/reference/render_hud.md) | Rasterizes a ggplot2 or gt object to a magick image |
+| [`hud_panel()`](https://luisdva.github.io/overlay/reference/hud_panel.md) | Adds a frame around the rasterized image |
+| [`warp_hud()`](https://luisdva.github.io/overlay/reference/warp_hud.md) | Applies a four-corner perspective distortion |
+| [`composite_hud()`](https://luisdva.github.io/overlay/reference/composite_hud.md) | Composites the overlay onto a background image |
+| [`hud_overlay()`](https://luisdva.github.io/overlay/reference/hud_overlay.md) | Convenience wrapper for the full pipeline |
 
 ## Quick start
 
 ``` r
+
 library(ggplot2)
 library(overlay)
 
@@ -75,11 +77,12 @@ out <- p |>
 ### `hud_overlay()`
 
 [`hud_overlay()`](https://luisdva.github.io/overlay/reference/hud_overlay.md)
-wraps all the relevant functions (render → panel → warp → overlay) in a
+wraps all the relevant functions (render, panel, warp, and overlay) in a
 single call. The object to overlay is the first argument so the ggplot2
 and gt objects can be piped directly into the function.
 
 ``` r
+
 hud_overlay(
   overlay,           # ggplot2 or gt object, or carbon image of a code snippet
   background,        # path, URL, or magick-image
@@ -110,6 +113,7 @@ directly — each entry is a `c(dx, dy)` pixel offset from that corner’s
 natural position:
 
 ``` r
+
 # Lean the panel to the left
 p |>
   hud_overlay(
@@ -127,6 +131,7 @@ overlays to the same background. Use the base pipe placeholder `_` to
 pass the result from one overlay as the background for the next:
 
 ``` r
+
 library(ggplot2)
 library(overlay)
 
@@ -180,6 +185,7 @@ Each function can also be called individually, which is useful for
 debugging or for fine-grained control over an intermediate step:
 
 ``` r
+
 library(ggplot2)
 library(overlay)
 
@@ -230,6 +236,7 @@ responsive, but usually work after a few tries in the case of timeout
 errors.
 
 ``` r
+
 library(overlay)
 
 # Create a code snippet image
@@ -257,6 +264,7 @@ supports both dark and light themes and by default is mostly hard-coded,
 but the output can be customized with additional parameters:
 
 ``` r
+
 # Light theme with custom settings
 code_img <- carbon_image(
   plotting_code,
@@ -276,6 +284,7 @@ return a `magick-image` object, which can be saved with
 [`magick::image_write()`](https://docs.ropensci.org/magick/reference/editing.html)
 
 ``` r
+
 magick::image_write(out, "result.png")
 ```
 
@@ -295,9 +304,8 @@ magick::image_write(out, "result.png")
 
 - ImageMagick (required by magick). Verify with
   [`magick::magick_config()`](https://docs.ropensci.org/magick/reference/config.html)
-  in R or `magick -version` in your shell.
-- Fonts: if your plots/tables use custom fonts, ensure they are
-  available to the system.
+  in R or `magick --version` in the terminal.
+- Fonts: when using custom fonts, make sure they are available.
 
 ### LLM disclosure
 

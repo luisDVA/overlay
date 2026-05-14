@@ -1,6 +1,7 @@
 # Getting Started with overlay
 
 ``` r
+
 library(overlay)
 library(ggplot2)
 library(gt)
@@ -26,6 +27,7 @@ compositing in one go.
 We can use any `ggplot2` figure, `gt` table, or code snippet.
 
 ``` r
+
 library(overlay)
 library(ggplot2)
 library(gt)
@@ -65,6 +67,7 @@ Use
 to place these objects onto a background image.
 
 ``` r
+
 # Path to a background image
 bg <- system.file("extdata", "penguins.jpg", package = "overlay")
 
@@ -102,6 +105,7 @@ carbon.js styling.
 ### Creating a code image
 
 ``` r
+
 # Create a code snippet
 code <- '
 ggplot(penguins, aes(bill_len, island)) +
@@ -128,6 +132,7 @@ A potential use case is showing a visualization alongside the code that
 created it:
 
 ``` r
+
 # Create a plot
 p <- ggplot(chinstrap, aes(x = flipper_len, y = body_mass)) +
   geom_point(color = "#5b9bd5", alpha = 0.7, size = 2) +
@@ -166,6 +171,7 @@ plotandcode <- hud_overlay(
 supports various customization options:
 
 ``` r
+
 # Light theme
 code_img_light <- carbon_image(
   code,
@@ -203,6 +209,7 @@ arguments to `panel` in
 for further customization.
 
 ``` r
+
 result_custom <- weather_tbl |>
   hud_overlay(
     background   = bg,
@@ -225,6 +232,7 @@ Each corner is specified as a `c(dx, dy)` offset from its natural
 position.
 
 ``` r
+
 p_warped <- penguin_plot |>
   hud_overlay(
     background = bg,
@@ -245,6 +253,7 @@ returns a `magick-image`, we can chain multiple calls using the base
 pipe placeholder `_` (R ≥ 4.2.0):
 
 ``` r
+
 # Multiple overlays on the same background
 multi_overlay <- weather_tbl |>
   hud_overlay(
@@ -270,11 +279,11 @@ multi_overlay <- weather_tbl |>
 
 ## Functions Summary
 
-| Function                                                                          | Description                                                        |
-|-----------------------------------------------------------------------------------|--------------------------------------------------------------------|
-| [`render_hud()`](https://luisdva.github.io/overlay/reference/render_hud.md)       | Rasterizes a ggplot2, gt, or magick-image object to a magick image |
-| [`carbon_image()`](https://luisdva.github.io/overlay/reference/carbon_image.md)   | Creates a syntax-highlighted code image using carbon.js            |
-| [`hud_panel()`](https://luisdva.github.io/overlay/reference/hud_panel.md)         | Wraps the image in a dark frame                                    |
-| [`warp_hud()`](https://luisdva.github.io/overlay/reference/warp_hud.md)           | Applies a 4-corner perspective distortion                          |
-| [`composite_hud()`](https://luisdva.github.io/overlay/reference/composite_hud.md) | Composites the overlay onto a background image                     |
-| [`hud_overlay()`](https://luisdva.github.io/overlay/reference/hud_overlay.md)     | Convenience wrapper for the full pipeline                          |
+| Function | Description |
+|----|----|
+| [`render_hud()`](https://luisdva.github.io/overlay/reference/render_hud.md) | Rasterizes a ggplot2, gt, or magick-image object to a magick image |
+| [`carbon_image()`](https://luisdva.github.io/overlay/reference/carbon_image.md) | Creates a syntax-highlighted code image using carbon.js |
+| [`hud_panel()`](https://luisdva.github.io/overlay/reference/hud_panel.md) | Wraps the image in a dark frame |
+| [`warp_hud()`](https://luisdva.github.io/overlay/reference/warp_hud.md) | Applies a 4-corner perspective distortion |
+| [`composite_hud()`](https://luisdva.github.io/overlay/reference/composite_hud.md) | Composites the overlay onto a background image |
+| [`hud_overlay()`](https://luisdva.github.io/overlay/reference/hud_overlay.md) | Convenience wrapper for the full pipeline |
